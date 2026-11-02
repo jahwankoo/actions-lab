@@ -1,0 +1,8 @@
+{
+  "action": "opened",
+  "issue": {
+    "number": 1,
+    "title": "Help: my workflow shows a red cross",
+    "user": {"login": "octocat"}
+  }
+}
