@@ -1,0 +1,45 @@
+name: lab1-daily-card
+
+on:
+  workflow_dispatch: {}
+  # TODO 3 (last step of Lab 1): remove the leading "# " from the next three lines to run every day.
+  # schedule:
+  #   - cron: "5 0 * * *"   # 00:05 UTC, which is 09:05 in Seoul. GitHub cron always uses UTC.
+
+permissions:
+  contents: write   # needed only by the commit step in TODO 2
+
+jobs:
+  card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pillow
+
+      - name: Draw today's card
+        run: python labs/lab1_daily_card/make_card.py
+
+      - name: Keep a copy of the card with this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-card
+          path: cards/latest.png
+
+      # TODO 2: remove the leading "# " from every line of this step to publish the card in the repo.
+      # - name: Commit the card
+      #   run: |
+      #     git config user.name "card-bot"
+      #     git config user.email "card-bot@users.noreply.github.com"
+      #     git add cards README.md
+      #     git diff --cached --quiet && exit 0
+      #     git commit -m "Card of $(date -u +%F)"
+      #     for i in 1 2 3; do
+      #       git pull --rebase origin main && git push && exit 0
+      #       sleep 5
+      #     done
+      #     exit 1

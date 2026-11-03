@@ -1,0 +1,27 @@
+name: lab2-autograder
+
+on:
+  push:
+    paths:
+      - "labs/lab2_autograder/**"
+      - ".github/workflows/lab2-autograder.yml"
+  workflow_dispatch: {}
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false          # let both Python versions finish so you can compare them
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - run: pip install pytest
+
+      - name: Grade solution.py
+        run: python labs/lab2_autograder/grade.py

@@ -1,0 +1,30 @@
+name: lab3-issue-bot
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write     # the bot may comment on issues, and nothing else
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The script reads the title from the event FILE. Never write ${{ github.event.issue.title }}
+      # inside a run: block. That pastes a stranger's text into a shell command.
+      - name: Build the reply
+        run: python labs/lab3_issue_bot/reply.py --event "$GITHUB_EVENT_PATH" --out reply.md
+
+      - name: Post the comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: gh issue comment "$ISSUE_NUMBER" --body-file reply.md
